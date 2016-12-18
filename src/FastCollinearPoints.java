@@ -8,7 +8,7 @@ import edu.princeton.cs.algs4.StdOut;
 
 public class FastCollinearPoints
 {
-    private LineSegment[] lineSegments;
+    private Node first = null;
     private int n = 0;
     
     // finds all line segments containing 4 or more points
@@ -27,9 +27,16 @@ public class FastCollinearPoints
                 Point p2 = points[j];
                 if (p1.compareTo(p2) == 0) throw new IllegalArgumentException();
             }
-        lineSegments = new LineSegment[1];
         
         findSegments(points);
+    }
+    
+    private class Node
+    {
+        private LineSegment item;
+        private Point startPoint;
+        private Point endPoint;
+        private Node next;
     }
     
     private void findSegments(Point[] points)
@@ -62,8 +69,7 @@ public class FastCollinearPoints
                 {
                     if (m >= 3)
                     {   
-                        LineSegment ls = new LineSegment(startPoint, endPoint);
-                        enqueue(ls);
+                        enqueue(startPoint, endPoint);
                     }
                     
                     lastSo = so;
@@ -83,8 +89,7 @@ public class FastCollinearPoints
             
             if (m >= 3)
             {   
-                LineSegment ls = new LineSegment(startPoint, endPoint);
-                enqueue(ls);
+                enqueue(startPoint, endPoint);
             }
         }
     }
@@ -101,35 +106,46 @@ public class FastCollinearPoints
     }
 
     // add the item
-    private void enqueue(LineSegment item)   
+    private void enqueue(Point p0, Point p1)   
     {
-        if (item == null) throw new NullPointerException();
-        if (isDuplicate(item)) return;
-        if (n == lineSegments.length) resize(2 * lineSegments.length);
-        lineSegments[n++] = item;
-    }
-    
-    private boolean isDuplicate(LineSegment item)
-    {
-        for (int i = 0; i < n; i++)
+        if (isDuplicate(p0, p1)) return;
+        
+        Node node = makeNode(p0, p1);
+        if (first == null)
+            first = node;
+        else
         {
-            LineSegment ls = lineSegments[i];
-            if (ls.toString().equals(item.toString())) return true;
+            Node oldFirst = first;
+            first = node;
+            first.next = oldFirst;
         }
         
+        n++;
+    }
+    
+    private Node makeNode(Point p0, Point p1)
+    {
+        LineSegment ls = new LineSegment(p0, p1);
+        Node node = new Node();
+        node.startPoint = p0;
+        node.endPoint = p1;
+        node.item = ls;
+        node.next = null;
+        return node;
+    }
+    
+    private boolean isDuplicate(Point p0, Point p1)
+    {
+        Node current = first;
+        while (current != null)
+        {
+            if (current.startPoint.compareTo(p0) == 0
+                    && current.endPoint.compareTo(p1) == 0)
+                return true;
+            current = current.next;
+        }
         return false;
     }
-    
-    // change resized-array to increase or decrease space of storage
-    private void resize(int capacity)
-    {
-        LineSegment[] copy = new LineSegment[capacity];
-        for (int i = 0; i < n; i++)
-            copy[i] = lineSegments[i];
-            
-        lineSegments = copy;
-    }
-    
     
     // the number of line segments
     public int numberOfSegments()        
@@ -141,8 +157,13 @@ public class FastCollinearPoints
     public LineSegment[] segments()
     {
         LineSegment[] copy = new LineSegment[n];
-        for (int i = 0; i < n; i++)
-            copy[i] = lineSegments[i];
+        Node current = first;
+        int i = 0;
+        while (current != null)
+        {
+            copy[i++] = current.item;
+            current = current.next;
+        }
         
         return copy;
     }

@@ -122,6 +122,7 @@ public class Point implements Comparable<Point> {
         {
             double so1 = this.basePoint.slopeTo(o1);
             double so2 = this.basePoint.slopeTo(o2);
+            
             if (so1 < so2) return -1;
             else if (so1 == so2) return 0;
             else return 1;
