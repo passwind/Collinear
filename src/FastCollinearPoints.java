@@ -80,6 +80,12 @@ public class FastCollinearPoints
                     }
                 } 
             }
+            
+            if (m >= 3)
+            {   
+                LineSegment ls = new LineSegment(startPoint, endPoint);
+                enqueue(ls);
+            }
         }
     }
     
