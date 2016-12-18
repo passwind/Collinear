@@ -28,15 +28,6 @@ public class Point implements Comparable<Point> {
         this.x = x;
         this.y = y;
     }
-    
-    private static class PointOrder implements Comparator<Point>
-    {
-        @Override
-        public int compare(Point o1, Point o2)
-        {
-            return o1.compareTo(o2);
-        }        
-    }
 
     /**
      * Draws this point to standard draw.
@@ -69,6 +60,9 @@ public class Point implements Comparable<Point> {
      * @return the slope between this point and the specified point
      */
     public double slopeTo(Point that) {
+        if (that.compareTo(this) == 0)
+            return Double.NEGATIVE_INFINITY;
+        
         if (that.y == this.y)
             return +0.0;
         
@@ -78,7 +72,7 @@ public class Point implements Comparable<Point> {
         if (this.compareTo(that) == 0) 
             return Double.NEGATIVE_INFINITY;
         
-        return ((double)that.y - (double)this.y) / ((double)that.x - (double)this.x);
+        return ((double) that.y - (double) this.y) / ((double) that.x - (double) this.x);
     }
 
     /**

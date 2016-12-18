@@ -50,7 +50,7 @@ public class FastCollinearPoints
             for (int j = 0; j < cPoints.length; j++)
             {
                 double so = basePoint.slopeTo(cPoints[j]);
-                if (lastSo == so) 
+                if (j > 0 && lastSo == so) 
                 {
                     m++;
                     if (endPoint.compareTo(cPoints[j]) < 0)
@@ -105,7 +105,7 @@ public class FastCollinearPoints
     
     private boolean isDuplicate(LineSegment item)
     {
-        for(int i = 0; i < n; i++)
+        for (int i = 0; i < n; i++)
         {
             LineSegment ls = lineSegments[i];
             if (ls.toString().equals(item.toString())) return true;

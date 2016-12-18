@@ -78,7 +78,7 @@ public class BruteCollinearPoints
     
     private boolean isDuplicate(LineSegment item)
     {
-        for(int i = 0; i < n; i++)
+        for (int i = 0; i < n; i++)
         {
             LineSegment ls = lineSegments[i];
             if (ls.toString().equals(item.toString())) return true;
