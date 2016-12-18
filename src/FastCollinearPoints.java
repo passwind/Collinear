@@ -8,6 +8,9 @@ import edu.princeton.cs.algs4.StdOut;
 
 public class FastCollinearPoints
 {
+    private LineSegment[] lineSegments;
+    private int n = 0;
+    
     // finds all line segments containing 4 or more points
     public FastCollinearPoints(Point[] points)
     {
@@ -29,33 +32,53 @@ public class FastCollinearPoints
         findSegments(points);
     }
     
-    private LineSegment[] lineSegments;
-    private int n = 0;
-    
     private void findSegments(Point[] points)
     {
         for (int i = 0; i < points.length; i++)
         {
             Point basePoint = points[i];
             Point[] cPoints = makeComparePoints(points, i);
+           
             Comparator<Point> slopeOrder = basePoint.slopeOrder();
             Arrays.sort(cPoints, slopeOrder);
+            
             int m = 0;
-            double lastSo = basePoint.slopeTo(cPoints[0]);
-            for (int j = 1; j < cPoints.length; j++)
+            double lastSo = Double.NEGATIVE_INFINITY;
+            Point startPoint = basePoint;
+            Point endPoint = basePoint;
+            
+            for (int j = 0; j < cPoints.length; j++)
             {
                 double so = basePoint.slopeTo(cPoints[j]);
                 if (lastSo == so) 
+                {
                     m++;
+                    if (endPoint.compareTo(cPoints[j]) < 0)
+                        endPoint = cPoints[j];
+                    if (startPoint.compareTo(cPoints[j]) > 0)
+                        startPoint = cPoints[j];
+                }
                 else
                 {
                     if (m >= 3)
-                    {
-                        LineSegment ls = new LineSegment(basePoint, cPoints[j-1]);
+                    {   
+                        LineSegment ls = new LineSegment(startPoint, endPoint);
                         enqueue(ls);
                     }
-                }
                     
+                    lastSo = so;
+                    m = 1;
+                    if (basePoint.compareTo(cPoints[j]) > 0)
+                    {
+                        startPoint = cPoints[j];
+                        endPoint = basePoint;
+                    }
+                    else  
+                    {
+                        startPoint = basePoint;
+                        endPoint = cPoints[j];
+                    }
+                } 
             }
         }
     }
@@ -75,8 +98,20 @@ public class FastCollinearPoints
     private void enqueue(LineSegment item)   
     {
         if (item == null) throw new NullPointerException();
+        if (isDuplicate(item)) return;
         if (n == lineSegments.length) resize(2 * lineSegments.length);
         lineSegments[n++] = item;
+    }
+    
+    private boolean isDuplicate(LineSegment item)
+    {
+        for(int i = 0; i < n; i++)
+        {
+            LineSegment ls = lineSegments[i];
+            if (ls.toString().equals(item.toString())) return true;
+        }
+        
+        return false;
     }
     
     // change resized-array to increase or decrease space of storage
