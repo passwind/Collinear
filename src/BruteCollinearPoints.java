@@ -35,42 +35,58 @@ public class BruteCollinearPoints
     private void findSegments(Point[] points)
     {
         for (int i = 0; i < points.length-3; i++)
-            for (int j = i+1; j < points.length-2; j++)      
+        {
+            Point p0 = points[i];
+            for (int j = i+1; j < points.length-2; j++)
+            {
+                Point p1 = points[j];
+                double s1 = p0.slopeTo(p1);
+                
                 for (int k = j+1; k < points.length-1; k++)
                 {
-                    Point p0 = points[i];
-                    Point p1 = points[j];
                     Point p2 = points[k];
-                    double s1 = p0.slopeTo(p1);
                     double s2 = p0.slopeTo(p2);
                     
                     if (s1 != s2) continue;
                     
                     for (int r = k+1; r < points.length; r++)
-                    {
+                    {   
                         Point p3 = points[r];
-                        
                         double s3 = p0.slopeTo(p3);
                         
                         if (s1 == s3)
                         {
                             Point[] lsPoints = new Point[]{p0, p1, p2, p3};
-                            Arrays.sort(lsPoints, Point.BY_POINT);
+                            Arrays.sort(lsPoints);
                             LineSegment ls = new LineSegment(lsPoints[0], lsPoints[3]);
                             enqueue(ls);
                         }
                     }
                 }
+            }
+        }
     }
     
     // add the item
     private void enqueue(LineSegment item)   
     {
         if (item == null) throw new NullPointerException();
+        if (isDuplicate(item)) return;
         if (n == lineSegments.length) resize(2 * lineSegments.length);
         lineSegments[n++] = item;
     }
     
+    private boolean isDuplicate(LineSegment item)
+    {
+        for(int i = 0; i < n; i++)
+        {
+            LineSegment ls = lineSegments[i];
+            if (ls.toString().equals(item.toString())) return true;
+        }
+        
+        return false;
+    }
+
     // change resized-array to increase or decrease space of storage
     private void resize(int capacity)
     {
