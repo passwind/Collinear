@@ -41,23 +41,32 @@ public class FastCollinearPoints
     
     private void findSegments(Point[] points)
     {
+        Point[] cPoints = new Point[points.length];
+        
+        for (int i = 0; i < points.length; i++) cPoints[i] = points[i];
+        
         for (int i = 0; i < points.length; i++)
         {
             Point basePoint = points[i];
-            Point[] cPoints = makeComparePoints(points, i);
            
             Comparator<Point> slopeOrder = basePoint.slopeOrder();
             Arrays.sort(cPoints, slopeOrder);
             
+            Point[] bPoints = new Point[cPoints.length];
+            
             int m = 0;
-            double lastSo = Double.NEGATIVE_INFINITY;
+            int bn = 0;
+            
+            double lastSo = basePoint.slopeTo(cPoints[0]);
+            if (lastSo != Double.NEGATIVE_INFINITY) continue;
+            
             Point startPoint = basePoint;
             Point endPoint = basePoint;
             
-            for (int j = 0; j < cPoints.length; j++)
+            for (int j = 1; j < cPoints.length; j++)
             {
                 double so = basePoint.slopeTo(cPoints[j]);
-                if (j > 0 && lastSo == so) 
+                if (lastSo == so) 
                 {
                     m++;
                     if (endPoint.compareTo(cPoints[j]) < 0)
@@ -70,6 +79,11 @@ public class FastCollinearPoints
                     if (m >= 3)
                     {   
                         enqueue(startPoint, endPoint);
+                    }
+                    else
+                    {
+                        for (int k = j-m; k < j; k++)
+                            bPoints[bn++] = cPoints[k];
                     }
                     
                     lastSo = so;
@@ -91,18 +105,14 @@ public class FastCollinearPoints
             {   
                 enqueue(startPoint, endPoint);
             }
+            else
+            {
+                for (int k = cPoints.length-m; k < cPoints.length; k++)
+                    bPoints[bn++] = cPoints[k];
+            }
+            
+            cPoints = bPoints;
         }
-    }
-    
-    private Point[] makeComparePoints(Point[] points, int i)
-    {
-        Point[] nps = new Point[points.length-1];
-        for (int j = 0; j < points.length; j++)
-        {
-            if (j < i) nps[j] = points[j];
-            else if (j > i) nps[j-1] = points[j];
-        }
-        return nps;
     }
 
     // add the item
