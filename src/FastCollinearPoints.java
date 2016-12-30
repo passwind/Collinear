@@ -52,13 +52,9 @@ public class FastCollinearPoints
             Comparator<Point> slopeOrder = basePoint.slopeOrder();
             Arrays.sort(cPoints, slopeOrder);
             
-            Point[] bPoints = new Point[cPoints.length];
-            
             int m = 0;
-            int bn = 0;
             
-            double lastSo = basePoint.slopeTo(cPoints[0]);
-            if (lastSo != Double.NEGATIVE_INFINITY) continue;
+            double lastSo = Double.NEGATIVE_INFINITY;
             
             Point startPoint = basePoint;
             Point endPoint = basePoint;
@@ -80,11 +76,6 @@ public class FastCollinearPoints
                     {   
                         enqueue(startPoint, endPoint);
                     }
-                    else
-                    {
-                        for (int k = j-m; k < j; k++)
-                            bPoints[bn++] = cPoints[k];
-                    }
                     
                     lastSo = so;
                     m = 1;
@@ -105,13 +96,6 @@ public class FastCollinearPoints
             {   
                 enqueue(startPoint, endPoint);
             }
-            else
-            {
-                for (int k = cPoints.length-m; k < cPoints.length; k++)
-                    bPoints[bn++] = cPoints[k];
-            }
-            
-            cPoints = bPoints;
         }
     }
 
