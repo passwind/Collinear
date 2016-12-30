@@ -15,20 +15,27 @@ public class FastCollinearPoints
     public FastCollinearPoints(Point[] points)
     {
         if (points == null) throw new NullPointerException();
-        for (Point p : points)
-        {
-            if (p == null) throw new NullPointerException();
-        }
+        
+        Point[] cPoints = new Point[points.length];
         
         for (int i = 0; i < points.length-1; i++)
+        {
+            Point p1 = points[i];
+            if (i == 0 && p1 == null) throw new NullPointerException();
+            cPoints[i] = p1;
+            
             for (int j = i+1; j < points.length; j++)
             {
-                Point p1 = points[i];
                 Point p2 = points[j];
+                if (i == 0 && p2 == null) throw new NullPointerException();
+                
                 if (p1.compareTo(p2) == 0) throw new IllegalArgumentException();
             }
+        }
         
-        findSegments(points);
+        cPoints[points.length-1] = points[points.length-1];
+        
+        findSegments(points, cPoints);
     }
     
     private class Node
@@ -39,12 +46,8 @@ public class FastCollinearPoints
         private Node next;
     }
     
-    private void findSegments(Point[] points)
+    private void findSegments(Point[] points, Point[] cPoints)
     {
-        Point[] cPoints = new Point[points.length];
-        
-        for (int i = 0; i < points.length; i++) cPoints[i] = points[i];
-        
         for (int i = 0; i < points.length; i++)
         {
             Point basePoint = points[i];
